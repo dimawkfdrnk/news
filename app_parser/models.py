@@ -1,11 +1,10 @@
 from django.db import models
-from .tasks import save_in_base
+
 class News(models.Model):
-    title = models.TextField()
-    url = models.TextField()
+    title = models.CharField(max_length=400)
+    image = models.TextField()
+    text = models.TextField()
 
     @classmethod
-    def create_news(cls):
-        s = save_in_base()
-        for i in s:
-            cls.objects.create(title=i['title'], url=i['url'])
+    def create_news(cls, title, image, text):
+        cls.objects.create(title=title, image=image, text=text)
