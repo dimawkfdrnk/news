@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+<form method="POST">
+    {% csrf_token %}
+    <div style="margin-left: 300px; margin-top: 50px">
+        <div class="card" style="width: 40rem;">
+            <div class="card-header">
+                <h4>Регистрация</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-1">
+                    {{form|crispy}}
+                    <button class="btn btn-dark" type="submit">Зарегистрироваться</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

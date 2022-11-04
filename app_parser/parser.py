@@ -1,9 +1,8 @@
 from urllib.parse import urljoin
-import  requests
+
+import requests
 from bs4 import BeautifulSoup
 
-
-URLS = ['https://habr.com/ru/news/top/daily/']
 
 class Crawler:
     def __init__(self, urls):
@@ -35,19 +34,29 @@ class Pareser(Crawler):
     def article_data(self, urls_article):
         article_data = []
         soup = Crawler(urls_article).get_soup()
-        for key in soup:
+        for url in soup:
+            image = (soup[url].find('div', attrs={'id': 'post-content-body'}).find('img'))
+            if image != None:
+                try:
+                    image = image['data-src']
+                except KeyError:
+                    image = image['src']
+
             article_data.append({
-                'title': soup[key].find('h1').text,
-                'image': str(soup[key].find('figure')),
-                'text': soup[key].find('div', id='post-content-body').text})
+                'title': soup[url].find('h1').text,
+                'image': image,
+                'text': soup[url].find('div', attrs={'id': 'post-content-body'}).text,
+                'url': url
+            })
 
         return article_data
 
 
+def get_exchange_rates():
+    url = 'https://www.nbrb.by/api/exrates/rates?periodicity=0'
+    response = requests.get(url=url).json()
 
-# soup = Crawler(URLS).get_soup()
-# habr = Pareser(soup)
-# data = habr.get_data()
-# d = habr.news_data(['https://habr.com/ru/news/t/695364/'])
-# print(data)
-
+    data = {course_data['Cur_Abbreviation']: course_data for course_data in response}
+    data = {key: data[key] for key in data if key == 'EUR' or key == 'RUB' or key == 'USD'}
+    for key in data:
+        print(key, data[key]['Cur_OfficialRate'])

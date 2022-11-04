@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div style="width:100%;">
+    <div style="width: 140%; margin: 20px auto;">
+        <main class="container">
+            <div class="col-md-7">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-10 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <img src="{{context_news.image}}" width="706">
+                        <strong class="d-inline-block mb-2 text-primary">habr.com</strong>
+                        <h3 class="mb-0">
+                            {{context_news.title}}
+                        </h3>
+                        <div class="mb-1 text-muted">Nov 12</div>
+                        <p>{{context_news.text|linebreaks}}</p>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                    </div>
+                </div>
+                <br>
+                {% if request.user.is_authenticated %}
+                {%if ind %}
+                <form action="{% url 'likes' %}" method="POST">
+                    <input type="hidden" name="news_id" value="{{context_news.id}}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-dark" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-heart" viewBox="0 0 16 16">
+                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                        </svg>
+                    </button>
+                </form>
+                {%else%}
+                <form action="{% url 'delete_like' %}" method="POST">
+                    <input type="hidden" name="news_id" value="{{context_news.id}}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-heart" viewBox="0 0 16 16">
+                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                        </svg>
+                    </button>
+                </form>
+                {% endif %}
+                {% endif %}
+                <br>
+                {% if request.user.is_authenticated %}
+                <form action="{% url 'comments' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="news_id" value="{{context_news.id}}">
+                    {{comment_form|crispy}}
+                    <button class="btn btn-primary" type="submit">Отправить</button>
+                </form>
+                {% endif %}
+                <br>
+                {% for comment in comments %}
+                <p>
+                <p><h5>{{comment.user}}</h5></p>
+                <p>{{comment.comment_text}}</p>
+                <p>{{comment.creation_date|date:"Y-m-d H:i"}}</p>
+                <br>
+                </p>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</div>
+
+
+{% endblock %}

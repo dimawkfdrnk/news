@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_parser',
+    'app_news',
+    'app_registration',
     'django.contrib.postgres',
-    # 'django_celery_results'
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -129,10 +132,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CELERY_BROKER_URL = CELERY_BROKER_URL = 'redis://localhost:6379/0'
-#
-# CELERY_RESULT_BACKEND = CELERY_BROKER_URL = 'redis://localhost:6379/0'
-#
-# CELERY_TAST_SERIALIZER = 'json'
-#
-# CELERY_RESULT_SERIALIZER = 'json'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
