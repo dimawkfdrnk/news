@@ -1,9 +1,9 @@
-from app_parser.models import News, Comments, Likes
+from app_parser.models import News, Comments, Likes, ExchangeRates
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-
 from .forms import CommentForm
+import requests
 
 
 def main_page(request):
@@ -14,10 +14,14 @@ def main_page(request):
         paginator = Paginator(page_obj, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
+        rates = ExchangeRates.get_rates()
+
+        # print(rates.rates['EUR']['Cur_Abbreviation'])
 
 
     context = {
         'page_obj': page_obj,
+        'rates':rates.rates
     }
     return render(request, 'main_page/main_page.html', context)
 

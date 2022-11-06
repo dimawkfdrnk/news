@@ -16,8 +16,19 @@ def save_in_base():
         models.News.create_news(data['title'], data['image'], data['text'], data['url'])
 
 
+def get_exchange_rates():
+    url = 'https://www.nbrb.by/api/exrates/rates?periodicity=0'
+    response = requests.get(url=url).json()
+
+    data = {course_data['Cur_Abbreviation']: course_data for course_data in response}
+    data = {key: data[key] for key in data if key == 'EUR' or key == 'RUB' or key == 'USD'}
+    models.ExchangeRates.create_rates(data)
+
+
 
 
 
 # from app_parser.run import save_in_base
 # save_in_base()
+# from app_parser.run import get_exchange_rates
+# get_exchange_rates()

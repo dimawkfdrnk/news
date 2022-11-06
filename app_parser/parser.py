@@ -52,11 +52,7 @@ class Pareser(Crawler):
         return article_data
 
 
-def get_exchange_rates():
-    url = 'https://www.nbrb.by/api/exrates/rates?periodicity=0'
-    response = requests.get(url=url).json()
 
-    data = {course_data['Cur_Abbreviation']: course_data for course_data in response}
-    data = {key: data[key] for key in data if key == 'EUR' or key == 'RUB' or key == 'USD'}
-    for key in data:
-        print(key, data[key]['Cur_OfficialRate'])
+
+
+

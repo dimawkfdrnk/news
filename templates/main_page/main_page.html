@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+{%for key, value in rates.items%}
+    <p>{{key}}: {{value.Cur_OfficialRate}}</p>
+{% endfor %}
 <div style="width:100%;">
     <div style="width: 140%; margin: 20px auto;">
         <main class="container">
