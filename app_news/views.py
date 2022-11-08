@@ -5,7 +5,6 @@ from django.shortcuts import render, redirect
 from .forms import CommentForm
 import requests
 
-
 def main_page(request):
     if request.method == "POST":
         page_obj = News.objects.filter(title__search=request.POST.get('search'))
@@ -15,28 +14,26 @@ def main_page(request):
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         rates = ExchangeRates.get_rates()
-
-        # print(rates.rates['EUR']['Cur_Abbreviation'])
-
-
     context = {
         'page_obj': page_obj,
-        'rates':rates.rates
+        'rates': rates,
+        'date': None
     }
+
     return render(request, 'main_page/main_page.html', context)
 
 
 def news_page(request, news_id):
     context_news = News.objects.get(id=news_id)
-    comments = Comments.objects.filter(news=news_id)
-    a = Likes.objects.filter(user=request.user.id, news=news_id).count()
-    ind = a == 0
+    like_user = Likes.objects.filter(user=request.user.id, news=news_id).count()
+    liked = like_user == 0
+
     context = {
         'context_news': context_news,
-        'comments': comments,
         'comment_form': CommentForm(),
-        "ind": ind
+        'liked': liked,
     }
+
     return render(request, 'main_page/news_page.html', context)
 
 
@@ -49,6 +46,8 @@ def comments(request):
                 news_id=request.POST.get('news_id'),
                 user=User.objects.get(username=request.user.username)
             )
+    else:
+        Comments.objects.filter(id=request.GET.get('comment_id')).delete()
 
     return redirect(request.META['HTTP_REFERER'])
 
@@ -57,6 +56,7 @@ def likes(request):
     if request.method == "POST":
         Likes.objects.create(
             news_id=request.POST.get('news_id'), user=User.objects.get(username=request.user.username))
+
     return redirect(request.META['HTTP_REFERER'])
 
 
@@ -64,4 +64,15 @@ def delete_like(request):
     if request.method == "POST":
         Likes.objects.filter(
             user=request.user.id, news=request.POST.get('news_id')).delete()
+
+    return redirect(request.META['HTTP_REFERER'])
+
+
+def create_authors_articles(request):
+    pass
+
+
+def update_data(request):
+    News.update_news()
+    ExchangeRates.update_rates()
     return redirect(request.META['HTTP_REFERER'])

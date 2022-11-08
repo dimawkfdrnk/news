@@ -3,25 +3,25 @@
 {% block content %}
 
 <div style="width:100%;">
-    <div style="width: 140%; margin: 20px auto;">
+    <div style="width: 130%; margin: 20px auto;">
         <main class="container">
-            <div class="col-md-7">
+            <div class="col-md-8">
                 <div class="row g-0 border rounded overflow-hidden flex-md-row mb-10 shadow-sm h-md-250 position-relative">
                     <div class="col p-4 d-flex flex-column position-static">
-                        <img src="{{context_news.image}}" width="706">
-                        <strong class="d-inline-block mb-2 text-primary">habr.com</strong>
+                        <img src="{{context_news.image}}" width="810">
+                        <p></P><strong class="d-inline-block mb-2 text-primary">Источник: habr.com</strong></p>
                         <h3 class="mb-0">
                             {{context_news.title}}
                         </h3>
-                        <div class="mb-1 text-muted">Nov 12</div>
-                        <p>{{context_news.text|linebreaks}}</p>
-                    </div>
-                    <div class="col-auto d-none d-lg-block">
+                        <p>
+                        <div class="mb-1 text-muted">{{context_news.creation_date_news|date}}</div>
+                        <div class="text">{{context_news.text|linebreaks}}</div>
+                        <p>
                     </div>
                 </div>
                 <br>
                 {% if request.user.is_authenticated %}
-                {%if ind %}
+                {%if liked %}
                 <form action="{% url 'likes' %}" method="POST">
                     <input type="hidden" name="news_id" value="{{context_news.id}}">
                     {% csrf_token %}
@@ -43,6 +43,8 @@
                         </svg>
                     </button>
                 </form>
+                <p>
+                <p>Лайков: {{context_news.get_likes_news.count}}</p></p>
                 {% endif %}
                 {% endif %}
                 <br>
@@ -51,22 +53,35 @@
                     {% csrf_token %}
                     <input type="hidden" name="news_id" value="{{context_news.id}}">
                     {{comment_form|crispy}}
-                    <button class="btn btn-primary" type="submit">Отправить</button>
+                    <button class="btn btn-dark" type="submit">Отправить</button>
                 </form>
                 {% endif %}
                 <br>
-                {% for comment in comments %}
-                <p>
-                <p><h5>{{comment.user}}</h5></p>
-                <p>{{comment.comment_text}}</p>
-                <p>{{comment.creation_date|date:"Y-m-d H:i"}}</p>
                 <br>
+                <h5>Комментарии: {{context_news.get_comments_news.count}}</h5>
+                {% for comment in context_news.get_comments_news %}
+
+                <p>
+                <div class="card p-2 shadow-sm">
+                    <figure class="p-2 mb-0 ">
+                        <h6 class="border-bottom pb-2 mb-0">{{comment.user}}</h6>
+                        <div class="pt-3">{{comment.comment_text|linebreaks}}</div>
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex text-muted">
+                                <small>{{comment.creation_date|date:"Y-m-d H:i"}}</small>
+                            </div>
+                            <form action="{% url 'comments' %}" method="GET">
+                                <input type="hidden" name="comment_id" value="{{comment.id}}">
+                                <button type="submit"  class="btn btn-dark btn-sm">Удалить</button></a>
+                            </form>
+                        </div>
+                    </figure>
+                </div>
                 </p>
                 {% endfor %}
             </div>
         </main>
     </div>
 </div>
-
 
 {% endblock %}
