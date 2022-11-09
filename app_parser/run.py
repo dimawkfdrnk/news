@@ -13,7 +13,7 @@ def save_in_base():
     z = [i for i in urls_article if not i in [s.url for s in a]]
     article_data = habr.article_data(z)
     for data in article_data:
-        models.News.create_news(data['title'], data['image'], data['text'], data['url'])
+        models.News.create_news(title=data['title'], image=data['image'], text=data['text'], url=data['url'])
 
 
 def get_exchange_rates():

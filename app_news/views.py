@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from .forms import CommentForm, CreateAuthorsArticleForm
+from django.contrib import messages
 
 
 def main_page(request):
@@ -77,7 +78,7 @@ def create_authors_articles(request):
             text_article = form['text_article'].value()
             author = User.objects.get(username=request.user.username)
             AuthorsArticles.create_authors_article(title=title, author=author, text_article=text_article)
-
+            messages.success(request, f'Статья отправлена на модерацию!')
     lol = CreateAuthorsArticleForm()
     context = {
         'lol': lol

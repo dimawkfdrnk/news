@@ -17,8 +17,8 @@ class News(models.Model):
         ordering = ('-creation_date_news',)
 
     @classmethod
-    def create_news(cls, title, image, text, url):
-        cls.objects.create(title=title, image=image, text=text, url=url)
+    def create_news(cls, **kwargs):
+        cls.objects.create(title=kwargs['title'], image=kwargs['image'], text=kwargs['text'], url=kwargs['url'])
 
     @classmethod
     def update_news(cls):

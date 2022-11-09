@@ -5,6 +5,13 @@
     <div style="width: 150%; margin: 20px auto;">
         <main class="container">
             <div class="col-md-5">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <div class="shadow-sm p-3 mb-5 bg-body rounded border">
                     <form action="{% url 'create_authors_articles' %}" method="POST">
                         {% csrf_token %}
