@@ -8,7 +8,7 @@ from django.contrib import messages
 
 def main_page(request):
     rates = ExchangeRates.get_rates()
-    articles = AuthorsArticles.get_authors_article()
+    articles = AuthorsArticles.get_authors_article()['reverce_article']
     page_obj = News.objects.all()
     paginator = Paginator(page_obj, 5)
     page_number = request.GET.get('page')
@@ -43,13 +43,14 @@ def comments(request):
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
-            Comments.objects.create(
-                **form.cleaned_data,
-                news_id=request.POST.get('news_id'),
+
+            Comments.create_comment(
+                news_id=News.objects.get(id=request.POST.get('news_id')),
+                comment_text=form['comment_text'].value(),
                 user=User.objects.get(username=request.user.username)
             )
     else:
-        Comments.objects.filter(id=request.GET.get('comment_id')).delete()
+        Comments.delete_comments(request.GET.get('comment_id'))
 
     return redirect(request.META['HTTP_REFERER'])
 
@@ -79,11 +80,26 @@ def create_authors_articles(request):
             author = User.objects.get(username=request.user.username)
             AuthorsArticles.create_authors_article(title=title, author=author, text_article=text_article)
             messages.success(request, f'Статья отправлена на модерацию!')
-    lol = CreateAuthorsArticleForm()
+    article_form = CreateAuthorsArticleForm()
     context = {
-        'lol': lol
+        'article_form': article_form
     }
     return render(request, 'main_page/authors_article.html', context)
 
 
+def authors_article_page(request, article_id):
+    article = AuthorsArticles.objects.get(id=article_id)
 
+    context = {
+        'article': article
+    }
+
+    return render(request, 'main_page/authors_article_page.html', context)
+
+def all_authors_article(request):
+    all_article = AuthorsArticles.get_authors_article()['articles']
+
+    context = {
+        'all_article': all_article
+    }
+    return render(request, 'main_page/all_authors_article.html', context)

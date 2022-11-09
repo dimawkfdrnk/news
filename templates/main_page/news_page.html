@@ -10,9 +10,7 @@
                     <div class="col p-4 d-flex flex-column position-static">
                         <img src="{{context_news.image}}" width="810">
                         <p></P><strong class="d-inline-block mb-2 text-primary">Источник: habr.com</strong></p>
-                        <h3 class="mb-0">
-                            {{context_news.title}}
-                        </h3>
+                        <h3 class="mb-0">{{context_news.title}}</h3>
                         <p>
                         <div class="mb-1 text-muted">{{context_news.creation_date_news|date}}</div>
                         <div class="text">{{context_news.text|linebreaks}}</div>
@@ -60,7 +58,6 @@
                 <br>
                 <h5>Комментарии: {{context_news.get_comments_news.count}}</h5>
                 {% for comment in context_news.get_comments_news %}
-
                 <p>
                 <div class="card p-2 shadow-sm">
                     <figure class="p-2 mb-0 ">
@@ -70,10 +67,12 @@
                             <div class="d-flex text-muted">
                                 <small>{{comment.creation_date|date:"Y-m-d H:i"}}</small>
                             </div>
+                            {% if request.user == comment.user%}
                             <form action="{% url 'comments' %}" method="GET">
                                 <input type="hidden" name="comment_id" value="{{comment.id}}">
                                 <button type="submit"  class="btn btn-dark btn-sm">Удалить</button></a>
                             </form>
+                            {% endif %}
                         </div>
                     </figure>
                 </div>

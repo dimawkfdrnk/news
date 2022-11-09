@@ -5,7 +5,7 @@ from .run import save_in_base, get_exchange_rates
 
 
 class News(models.Model):
-    title = models.CharField(max_length=400, verbose_name="Заголовок")
+    title = models.CharField(max_length=150, verbose_name="Заголовок")
     image = models.CharField(max_length=1000, null=True, verbose_name="Ссылка на изображение")
     text = models.TextField(blank=True, verbose_name="Текст новости")
     url = models.CharField(max_length=200, verbose_name="url исходной страницы")
@@ -52,10 +52,13 @@ class Comments(models.Model):
         verbose_name_plural = 'Комментарии'
         ordering = ('-creation_date',)
 
-    @property
-    def delete_comments(self):
+    @classmethod
+    def create_comment(cls, **kwargs):
+        cls.objects.create(news=kwargs['news_id'], comment_text=kwargs['comment_text'], user=kwargs['user'])
 
-        return reverse('news_page', kwargs={'news_id': self.pk})
+    @classmethod
+    def delete_comments(cls, comment_id):
+        cls.objects.filter(id=comment_id).delete()
 
 
 class Likes(models.Model):
@@ -86,7 +89,7 @@ class ExchangeRates(models.Model):
 
 
 class AuthorsArticles(models.Model):
-    title = models.CharField(max_length=200, verbose_name="Статья")
+    title = models.CharField(max_length=50, verbose_name="Статья")
     text_article = models.TextField(verbose_name="Текст статьи")
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
     creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
@@ -103,8 +106,12 @@ class AuthorsArticles(models.Model):
 
     @classmethod
     def get_authors_article(cls):
-        articles = AuthorsArticles.objects.filter(moderation_done=True).reverse()[:5]
-        return articles
+        articles = AuthorsArticles.objects.filter(moderation_done=True)
+        reverce_article = articles.reverse()[:5]
+        return {'reverce_article': reverce_article, 'articles': articles}
+
+    def get_url_article(self):
+        return reverse('authors_article_page', kwargs={'article_id': self.pk})
 
     def __str__(self):
         return self.title

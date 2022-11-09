@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="width:100%;">
+    <div style="width: 130%; margin: 20px auto;">
+        <main class="container">
+            <div class="col-md-8">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-10 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <img src="{{context_news.image}}" width="810">
+                        <p><h5 class="mb-0">{{article.author}}</h5></p>
+                        <h3 class="mb-0">{{article.title}}</h3>
+                        <p>
+                        <div class="mb-1 text-muted">{{article.creation_date|date}}</div>
+                        </p>
+                        <p>
+                        <div class="text">{{article.text_article|linebreaks}}</div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
