@@ -54,6 +54,7 @@ class Comments(models.Model):
 
     @property
     def delete_comments(self):
+
         return reverse('news_page', kwargs={'news_id': self.pk})
 
 

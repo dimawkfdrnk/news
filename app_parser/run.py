@@ -5,13 +5,39 @@ import requests
 
 URLS = ['https://habr.com/ru/news/top/daily/']
 
+tags = {
+    'received_data': {
+        'div': 'div',
+        'class': 'tm-articles-list',
+        'article': 'article'
+    },
+    'urls_article': {
+        'a': 'a',
+        'class': 'tm-article-snippet__title-link'
+    },
+    'image': {
+        'div': 'div',
+        'id': 'post-content-body',
+        'img': 'img',
+        'src': 'src',
+        'data-src': 'data-src'
+    },
+    'title': {
+        'h1': 'h1'
+    },
+    'text': {
+        'div': 'div',
+        'id': 'post-content-body'
+    }
+}
+
 def save_in_base():
-    a = models.News.objects.all()
-    soup = Crawler(URLS).get_soup()
-    habr = Pareser(soup)
-    urls_article = habr.get_urls()
-    z = [i for i in urls_article if not i in [s.url for s in a]]
-    article_data = habr.article_data(z)
+    all_news = models.News.objects.all()
+    soup = Crawler().get_soup(URLS)
+    habr = Pareser(tags)
+    urls_news = habr.get_urls(soup)
+    latest_news = [url for url in urls_news if not url in [news.url for news in all_news]]
+    article_data = habr.article_data(latest_news)
     for data in article_data:
         models.News.create_news(title=data['title'], image=data['image'], text=data['text'], url=data['url'])
 

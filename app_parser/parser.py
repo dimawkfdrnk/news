@@ -5,12 +5,9 @@ from bs4 import BeautifulSoup
 
 
 class Crawler:
-    def __init__(self, urls):
-        self.urls = urls
-
-    def get_soup(self):
+    def get_soup(self, urls):
         data = {}
-        for url in self.urls:
+        for url in urls:
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             data.update({url: soup})
@@ -20,32 +17,40 @@ class Crawler:
 
 class Pareser(Crawler):
 
-    def __init__(self, soup):
-        self.soup = soup
+    def __init__(self, tags):
+        self.tags = tags
 
-    def get_urls(self):
+    def get_urls(self, soup):
         urls_article = []
-        for key in self.soup:
-            received_data = self.soup[key].find('div', class_='tm-articles-list')
-            for article in received_data.find_all('article'):
-                urls_article.append(urljoin(key, article.find('a', class_='tm-article-snippet__title-link')['href']))
+
+        for key in soup:
+            received_data = soup[key].find(self.tags['received_data']['div'],
+                                           attrs={'class': self.tags['received_data']['class']})
+            received_data = received_data.find_all(self.tags['received_data']['article'])
+
+            for article in received_data:
+                urls_article.append(
+                    urljoin(key, article.find(self.tags['urls_article']['a'],
+                                              attrs={'class': self.tags['urls_article']['class']})['href']))
         return urls_article
 
     def article_data(self, urls_article):
         article_data = []
-        soup = Crawler(urls_article).get_soup()
+        soup = Crawler().get_soup(urls_article)
         for url in soup:
-            image = (soup[url].find('div', attrs={'id': 'post-content-body'}).find('img'))
+            image = (soup[url].find(self.tags['image']['div'],
+                                    attrs={'id': self.tags['image']['id']}).find(self.tags['image']['img']))
             if image != None:
                 try:
-                    image = image['data-src']
+                    image = image[self.tags['image']['data-src']]
                 except KeyError:
-                    image = image['src']
-
+                    image = image[self.tags['image']['src']]
+            title = soup[url].find(self.tags['title']['h1']).text
+            text = soup[url].find(self.tags['text']['div'], attrs={'id': self.tags['text']['id']}).text
             article_data.append({
-                'title': soup[url].find('h1').text,
+                'title': title,
                 'image': image,
-                'text': soup[url].find('div', attrs={'id': 'post-content-body'}).text,
+                'text': text,
                 'url': url
             })
 
