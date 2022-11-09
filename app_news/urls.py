@@ -8,6 +8,5 @@ urlpatterns = [
     path('comments', views.comments, name='comments'),
     path('likes', views.likes, name='likes'),
     path('delete_like', views.delete_like, name='delete_like'),
-    path('update_data', views.update_data, name='update_data'),
     path('create_authors_articles', views.create_authors_articles, name='create_authors_articles')
 ]

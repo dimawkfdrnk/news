@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div style="width:100%;">
+    <div style="width: 150%; margin: 20px auto;">
+        <main class="container">
+            <div class="col-md-5">
+                <div class="shadow-sm p-3 mb-5 bg-body rounded border">
+                    <form action="{% url 'create_authors_articles' %}" method="POST">
+                        {% csrf_token %}
+                        {{lol|crispy}}
+                        <button type="submit" class="btn btn-dark">Опубликовать</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

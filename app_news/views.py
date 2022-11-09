@@ -1,23 +1,25 @@
-from app_parser.models import News, Comments, Likes, ExchangeRates
+from app_parser.models import News, Comments, Likes, ExchangeRates, AuthorsArticles
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-from .forms import CommentForm
-import requests
+from .forms import CommentForm, CreateAuthorsArticleForm
+
 
 def main_page(request):
+    rates = ExchangeRates.get_rates()
+    articles = AuthorsArticles.get_authors_article()
+    page_obj = News.objects.all()
+    paginator = Paginator(page_obj, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     if request.method == "POST":
         page_obj = News.objects.filter(title__search=request.POST.get('search'))
-    else:
-        page_obj = News.objects.all()
-        paginator = Paginator(page_obj, 5)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-        rates = ExchangeRates.get_rates()
+
     context = {
         'page_obj': page_obj,
         'rates': rates,
-        'date': None
+        'articles': articles
     }
 
     return render(request, 'main_page/main_page.html', context)
@@ -27,7 +29,6 @@ def news_page(request, news_id):
     context_news = News.objects.get(id=news_id)
     like_user = Likes.objects.filter(user=request.user.id, news=news_id).count()
     liked = like_user == 0
-
     context = {
         'context_news': context_news,
         'comment_form': CommentForm(),
@@ -69,10 +70,19 @@ def delete_like(request):
 
 
 def create_authors_articles(request):
-    pass
+    if request.method == "POST":
+        form = CreateAuthorsArticleForm(request.POST)
+        if form.is_valid():
+            title = form['title'].value()
+            text_article = form['text_article'].value()
+            author = User.objects.get(username=request.user.username)
+            AuthorsArticles.create_authors_article(title=title, author=author, text_article=text_article)
+
+    lol = CreateAuthorsArticleForm()
+    context = {
+        'lol': lol
+    }
+    return render(request, 'main_page/authors_article.html', context)
 
 
-def update_data(request):
-    News.update_news()
-    ExchangeRates.update_rates()
-    return redirect(request.META['HTTP_REFERER'])
+

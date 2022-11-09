@@ -54,13 +54,7 @@ class Comments(models.Model):
 
     @property
     def delete_comments(self):
-        # Comments.objects.filter(news=self, id=self.id)
-        print(self.pk)
-        print(Comments.objects.filter(news=self))
         return reverse('news_page', kwargs={'news_id': self.pk})
-
-    # def __str__(self):
-    #     return self.comment_text
 
 
 class Likes(models.Model):
@@ -89,9 +83,27 @@ class ExchangeRates(models.Model):
     def update_rates(cls):
         get_exchange_rates()
 
-class AuthorsArticles(models.Model):
-    title = models.CharField(max_length=200)
-    text_article = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    creation_date = models.DateTimeField(auto_now_add=True)
 
+class AuthorsArticles(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Статья")
+    text_article = models.TextField(verbose_name="Текст статьи")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
+    creation_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    moderation_done = models.BooleanField(default=False, verbose_name="Модерация выполнена")
+
+    class Meta:
+        ordering = ('creation_date',)
+        verbose_name = 'Авторская статья'
+        verbose_name_plural = 'Авторские статьи'
+
+    @classmethod
+    def create_authors_article(cls, **kwargs):
+        cls.objects.create(author=kwargs['author'], title=kwargs['title'], text_article=kwargs['text_article'])
+
+    @classmethod
+    def get_authors_article(cls):
+        articles = AuthorsArticles.objects.filter(moderation_done=True).reverse()[:5]
+        return articles
+
+    def __str__(self):
+        return self.title
